@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Notes Board</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #000dc9;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(90deg, var(--primary), #1a2a6c);
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--warning);
+        }
+
+        .logo h1 {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover, nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            padding: 30px;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(rgba(236, 240, 241, 0.9), rgba(236, 240, 241, 0.9)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%232c3e50" opacity="0.05"/></svg>');
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: #555;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.6);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card i {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        /* Notes Board */
+        .notes-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-top: 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary);
+            font-size: 2rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+        }
+
+        .notes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .note-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+            border-left: 4px solid var(--warning);
+        }
+
+        .note-title {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .note-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .note-date {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .note-form {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        /* About Page */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .about-image {
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border-radius: 10px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .about-text h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        /* News Page */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .news-image {
+            height: 200px;
+            background: linear-gradient(45deg, #3498db, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .news-content {
+            padding: 25px;
+        }
+
+        .news-date {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .news-content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        /* Contact Page */
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .contact-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+        }
+
+        .contact-info h3 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        .contact-item i {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-top: 5px;
+        }
+
+        .contact-text h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-section h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--warning);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--warning);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .about-content,
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-image {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 15px;
+            }
+            
+            nav ul {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            
+            nav ul.show {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .feature-card {
+                padding: 20px;
+            }
+            
+            .notes-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <h1>School Notes Board</h1>
+            </div>
+            <button class="mobile-menu-btn" id="menuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul id="navMenu">
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                    <li><a href="#" class="nav-link" data-page="news">News</a></li>
+                    <li><a href="#" class="nav-link" data-page="contact">Contact</a></li>
+                </ul>
+            </nav>
+     </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Home Page -->
+            <section id="home" class="page active">
+                <div class="hero">
+                    <h2>Organize Your School Notes Effortlessly</h2>
+                    <p>School Notes Board is the perfect platform for students to create, manage, and share their academic notes in a simple and intuitive way.</p>
+                    <a href="#notes" class="cta-button">Start Taking Notes</a>
+                </div>
+
+                <div class="features">
+                    <div class="feature-card">
+                        <i class="fas fa-pencil-alt"></i>
+                        <h3>Easy Note Taking</h3>
+                        <p>Create and organize your notes with our simple and intuitive interface. Never lose important information again.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-book"></i>
+                        <h3>Subject Organization</h3>
+                        <p>Categorize your notes by subject to keep everything organized and easy to find when you need it.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-share-alt"></i>
+                        <h3>Share Notes</h3>
+                        <p>Collaborate with classmates by sharing your notes. Perfect for group study sessions.</p>
+                    </div>
+                </div>
+
+                <div class="notes-section" id="notes">
+                    <h2 class="section-title">Your Notes Board</h2>
+                    
+                    <div class="notes-container" id="notesContainer">
+                        <!-- Notes will be added here dynamically -->
+                    </div>
+                    
+                    <div class="note-form">
+                        <h3>Create a New Note</h3>
+                        <div class="form-group">
+                            <label for="noteTitle">Title</label>
+                            <input type="text" id="noteTitle" placeholder="Enter note title">
+                        </div>
+                        <div class="form-group">
+                            <label for="noteContent">Content</label>
+                            <textarea id="noteContent" placeholder="Write your note here"></textarea>
+                        </div>
+                        <button id="saveNoteBtn">Save Note</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- About Page -->
+            <section id="about" class="page">
+                <h2 class="section-title">About School Notes Board</h2>
+                <div class="about-content">
+                    <div class="about-image">
+                        Digital Learning Platform
+                    </div>
+                    <div class="about-text">
+                        <h2>Our Mission</h2>
+                        <p>School Notes Board was created to help students organize their academic materials in a simple, accessible way. We believe that good organization leads to better learning outcomes.</p>
+                        <p>Our platform is designed with student in mind, offering a clean interface that makes note-taking and retrieval effortless. Whether you're in middle school or university, our tools adapt to your needs.</p>
+                        <p>Founded in 2025, we've helped thousands of students improve their study habits and academic performance through better organization and note management.</p>
+                        <h3>Key Features</h3>
+                        <ul style="padding-left: 20px; margin-top: 10px;">
+                            <li>Intuitive note creation and editing</li>
+                            <li>Subject-based organization</li>
+                            <li>Cloud-based storage</li>
+                            <li>Collaboration tools</li>
+                            <li>Mobile-friendly design</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- News Page -->
+            <section id="news" class="page">
+                <h2 class="section-title">Latest News</h2>
+                <div class="news-grid">
+                    <div class="news-card">
+                        <div class="news-image">New Feature Update</div>
+                        <div class="news-content">
+                            <div class="news-date">October 15, 2023</div>
+                            <h3>Introducing Subject Categories</h3>
+                            <p>We're excited to announce the launch of subject categories, making it easier than ever to organize your notes by class or topic.</p>
+                        </div>
+                    </div>
+                    <div class="news-card">
+                        <div class="news-image">Study Tips</div>
+                        <div class="news-content">
+                            <div class="news-date">September 28, 2023</div>
+                            <h3>How to Take Effective Notes</h3>
+                            <p>Learn proven strategies for taking notes that improve retention and make studying more efficient with our comprehensive guide.</p>
+                        </div>
+                    </div>
+                    <div class="news-card">
+                        <div class="news-image">Mobile App</div>
+                        <div class="news-content">
+                            <div class="news-date">September 10, 2023</div>
+                            <h3>Mobile App Now Available</h3>
+                            <p>Access your notes anywhere, anytime with our new mobile application available for both iOS and Android devices.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Page -->
+            <section id="contact" class="page">
+                <h2 class="section-title">Contact Us</h2>
+                <div class="contact-container">
+                    <div class="contact-info">
+                        <h3>Get In Touch</h3>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="contact-text">
+                                <h4>Address</h4>
+                                <p>Addes abeba </p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="contact-text">
+                                <h4>Phone</h4>
+                                <p>+251926918608</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="contact-text">
+                                <h4>Email</h4>
+                                <p>natnaeldemes@gmail.com</p>
+                            </div>
+                        </div>
+                        
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="note-form">
+                        <h3>Send Us a Message</h3>
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" placeholder="Write your message here"></textarea>
+                        </div>
+                        <button>Send Message</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>School Notes Board</h3>
+                    <p>The ultimate platform for students to organize and share their academic notes.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-page="home">Home</a></li>
+                        <li><a href="#" data-page="about">About</a></li>
+                        <li><a href="#" data-page="news">News</a></li>
+                        <li><a href="#" data-page="contact">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2025 School Notes Board. 
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation
+            const navLinks = document.querySelectorAll('.nav-link, .footer-links a');
+            const pages = document.querySelectorAll('.page');
+            const menuBtn = document.getElementById('menuBtn');
+            const navMenu = document.getElementById('navMenu');
+            
+            // Mobile menu toggle
+            menuBtn.addEventListener('click', function() {
+                navMenu.classList.toggle('show');
+            });
+            
+            // Navigation click handler
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get target page
+                    const targetPage = this.getAttribute('data-page');
+                    
+                    // Hide all pages
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                    });
+                    
+                    // Show target page
+                    document.getElementById(targetPage).classList.add('active');
+                    
+                    // Update active nav link
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Close mobile menu if open
+                    navMenu.classList.remove('show');
+                    
+                    // Scroll to top
+                    window.scrollTo(0, 0);
+                });
+            });
+            
+            // Note functionality
+            const noteTitleInput = document.getElementById('noteTitle');
+            const noteContentInput = document.getElementById('noteContent');
+            const saveNoteBtn = document.getElementById('saveNoteBtn');
+            const notesContainer = document.getElementById('notesContainer');
+            
+            let notes = [];
+            
+            // Sample notes
+            notes = [
+                {
+                    id: 1,
+                    title: "Mathematics Formulas",
+                    content: "Quadratic formula: x = [-b ± √(b² - 4ac)] / 2a. Pythagorean theorem: a² + b² = c²",
+                    date: "Oct 20, 2023"
+                },
+                {
+                    id: 2,
+                    title: "Biology Notes - Cell Structure",
+                    content: "Eukaryotic cells have a nucleus and organelles. Prokaryotic cells lack a nucleus and membrane-bound organelles.",
+                    date: "Oct 18, 2023"
+                }
+            ];
+            
+            // Display notes
+            function displayNotes() {
+                notesContainer.innerHTML = '';
+                
+                if (notes.length === 0) {
+                    notesContainer.innerHTML = '<p class="empty-notes">No notes yet. Create your first note!</p>';
+                    return;
+                }
+                
+                notes.forEach(note => {
+                    const noteElement = document.createElement('div');
+                    noteElement.className = 'note-card';
+                    noteElement.innerHTML = `
+                        <h3 class="note-title">${note.title}</h3>
+                        <p class="note-content">${note.content}</p>
+                        <div class="note-date">${note.date}</div>
+                    `;
+                    notesContainer.appendChild(noteElement);
+                });
+            }
+            
+            // Save new note
+            saveNoteBtn.addEventListener('click', function() {
+                const title = noteTitleInput.value.trim();
+                const content = noteContentInput.value.trim();
+                
+                if (title && content) {
+                    const newNote = {
+                        id: Date.now(),
+                        title,
+                        content,
+                        date: new Date().toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                        })
+                    };
+                    
+                    notes.push(newNote);
+                    displayNotes();
+                    
+                    // Reset form
+                    noteTitleInput.value = '';
+                    noteContentInput.value = '';
+                } else {
+                    alert('Please fill in both title and content!');
+                }
+            });
+            
+            // Initial display
+            displayNotes();
+        });
+    </script>
+</body>
+</html>
